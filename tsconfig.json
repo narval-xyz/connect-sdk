@@ -1,0 +1,60 @@
+{
+  // Standalone tsconfig for public npm package
+  // This file is renamed to tsconfig.json when syncing to public repo
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {},
+    "jsx": "react-jsx",
+
+    // Type checking
+    "strict": true,
+    "useDefineForClassFields": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "useUnknownInCatchVariables": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+
+    // JavaScript support
+    "allowJs": false,
+    "checkJs": false,
+
+    // Interop constraints
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": false,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
+
+    // Language and environment
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+
+    // Skip type checking for node modules
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "rootDir": "./src",
+
+    // Declaration files
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx",
+    "**/*.spec.js",
+    "**/*.test.js",
+    "**/*.spec.jsx",
+    "**/*.test.jsx"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "arrowParens": "always",
+  "plugins": ["prettier-plugin-organize-imports"],
+  "printWidth": 120,
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ["*.yml", "*.yaml"],
+      "options": {
+        "quoteProps": "preserve"
+      }
+    }
+  ]
+}
