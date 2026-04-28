@@ -16,6 +16,6 @@ export const removeSearchParams = (paramOrParamsToRemove: string | string[]): vo
   window.history.replaceState(
     {},
     '',
-    `${window.location.pathname}${searchParams.size === 0 ? '' : `?${searchParams.toString()}`}`
+    `${window.location.pathname}${searchParams.size === 0 ? '' : `?${searchParams.toString()}`}${window.location.hash}`
   )
 }

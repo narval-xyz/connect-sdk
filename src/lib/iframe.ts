@@ -5,6 +5,8 @@ const DEFAULT_STATUS_MODE_POSITION = 'bottom_right'
 
 const WINDOW_STATUS_MODE_DIMENSION = { width: 320, height: 90 }
 
+const WINDOW_MINIMIZED_MODE_DIMENSION = { width: 58, height: 42 }
+
 const WINDOW_MODAL_MODE_DIMENSION = { width: 360, height: 600 }
 
 type WidgetPosition = 'center' | 'top_left' | 'top_right' | 'bottom_right' | 'bottom_left'
@@ -118,9 +120,9 @@ export class IframeWrapper implements IWindowWrapper {
     this.iframeContainer.id = 'narval-connect-widget-container'
     this.iframeContainer.style.position = 'fixed'
     this.iframeContainer.style.top = '0'
+    this.iframeContainer.style.right = '0'
+    this.iframeContainer.style.bottom = '0'
     this.iframeContainer.style.left = '0'
-    this.iframeContainer.style.width = '100%'
-    this.iframeContainer.style.height = '100%'
     this.iframeContainer.style.display = 'none'
     this.iframeContainer.style.justifyContent = 'center'
     this.iframeContainer.style.alignItems = 'center'
@@ -257,7 +259,7 @@ export class IframeWrapper implements IWindowWrapper {
           this.isWidgetMinimized = false
           this.isWidgetOpen = true
 
-          this.resize(WINDOW_STATUS_MODE_DIMENSION)
+          this.resize(WINDOW_MINIMIZED_MODE_DIMENSION)
           this.position(this.config.statusMode?.position || DEFAULT_STATUS_MODE_POSITION)
 
           // Double requestAnimationFrame to ensure transition plays after display change
@@ -300,9 +302,18 @@ export class IframeWrapper implements IWindowWrapper {
         this.resize(WINDOW_STATUS_MODE_DIMENSION)
         this.position(this.config.statusMode?.position || DEFAULT_STATUS_MODE_POSITION)
 
-        // Reset transform and opacity to make iframe visible
-        this.iframe.style.transform = 'translateY(0)'
-        this.iframe.style.opacity = '1'
+        // Double requestAnimationFrame to ensure transition plays after display change
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (this.iframeContainer) {
+              this.iframeContainer.style.opacity = '1'
+            }
+            if (this.iframe) {
+              this.iframe.style.transform = 'translateY(0)'
+              this.iframe.style.opacity = '1'
+            }
+          })
+        })
 
         this.log('Widget mini mode')
         break

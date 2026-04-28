@@ -7,22 +7,11 @@ export const TransactionAction = {
 } as const
 export type TransactionAction = (typeof TransactionAction)[keyof typeof TransactionAction]
 
-export const hexSchema = z.custom<`0x${string}`>(
-  (value) => {
-    const parse = z.string().safeParse(value)
-
-    if (parse.success) {
-      if (!value) return false
-      if (typeof value !== 'string') return false
-      return /^0x[0-9a-fA-F]*$/.test(value)
-    }
-
-    return false
-  },
-  {
+export const hexSchema = z
+  .string()
+  .refine((value) => /^0x[0-9a-fA-F]*$/.test(value), {
     message: 'value is an invalid hexadecimal'
-  }
-)
+  }) as z.ZodType<`0x${string}`>
 
 /**
  * EIP-712 typed data field validation
@@ -50,7 +39,7 @@ export const typedDataSchema = z.object({
   types: z.record(z.string(), z.array(typedDataFieldSchema)),
   primaryType: z.string().min(1, 'Primary type cannot be empty'),
   domain: eip712DomainSchema,
-  message: z.record(z.any())
+  message: z.record(z.string(), z.any())
 })
 
 export const accessListSchema = z.array(

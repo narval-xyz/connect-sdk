@@ -194,7 +194,7 @@ export const Eip1193MessageEventData = z.object({
 })
 export type Eip1193MessageEventData = z.infer<typeof Eip1193MessageEventData>
 
-export const dataSchemaParsers: Partial<Record<MessageType, z.ZodSchema<any>>> = {
+export const dataSchemaParsers: Partial<Record<MessageType, z.ZodType<any>>> = {
   [MessageType.ERROR_RESPONSE]: ErrorResponseData,
   [MessageType.RESTORE_SESSION_RESPONSE]: RestoreSessionResponseData,
   [MessageType.START_GRANT_RESPONSE]: StartGrantResponseData,

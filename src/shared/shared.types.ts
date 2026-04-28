@@ -50,7 +50,7 @@ export const ConnectGrantRequestAccess = z
     const hasProtocolPreset = Array.isArray(data.protocolPreset) && data.protocolPreset.length > 0
     const hasPermissions = !!data.permissions?.policies && data.permissions.policies.length > 0
     if (!hasProtocolPreset && !hasPermissions) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must have either protocolPreset or permissions.policies' })
+      ctx.addIssue({ code: 'custom', message: 'Must have either protocolPreset or permissions.policies' })
     }
   })
   .describe('V2 Access object in GrantRequest.accessToken.access')

@@ -64,7 +64,7 @@ export const EIP1193_ERROR_MESSAGES = {
 export const RequestArguments = z.object({
   method: z.string().describe('The RPC method name'),
   params: z
-    .union([z.array(z.unknown()), z.record(z.unknown())])
+    .union([z.array(z.unknown()), z.record(z.string(), z.unknown())])
     .optional()
     .describe('Method parameters')
 })
@@ -143,7 +143,9 @@ export type EthSendTransactionParams = z.infer<typeof EthSendTransactionParams>
 
 export const EthSignTypedDataParams = z.object({
   address: z.string().describe('Signing address'),
-  typedData: z.union([z.string(), z.record(z.unknown())]).describe('EIP-712 typed data (JSON string or object)')
+  typedData: z
+    .union([z.string(), z.record(z.string(), z.unknown())])
+    .describe('EIP-712 typed data (JSON string or object)')
 })
 export type EthSignTypedDataParams = z.infer<typeof EthSignTypedDataParams>
 
@@ -167,7 +169,7 @@ export const ConnectionState = {
 export type ConnectionState = (typeof ConnectionState)[keyof typeof ConnectionState]
 
 export const ConnectionInfo = z.object({
-  state: z.nativeEnum(ConnectionState).describe('Current connection state'),
+  state: z.enum(ConnectionState).describe('Current connection state'),
   chainId: z.string().describe('Current chain ID as hex string'),
   accounts: z.array(z.string()).describe('Connected account addresses'),
   connectedAt: z.number().optional().describe('Connection timestamp'),
