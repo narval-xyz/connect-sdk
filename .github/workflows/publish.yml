@@ -1,0 +1,102 @@
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      dist_tag:
+        description: npm dist-tag for this release
+        required: true
+        type: choice
+        default: latest
+        options:
+          - latest
+          - next
+          - rc
+          - beta
+      dry_run:
+        description: Run npm publish in --dry-run mode (no actual publish)
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build & publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    environment:
+      name: npm-publish
+      url: https://www.npmjs.com/package/@narval-xyz/connect
+
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Read package version
+        id: pkg
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Publishing $name@$version with dist-tag '${{ inputs.dist_tag }}'"
+
+      - name: Verify version is not already on npm
+        if: ${{ !inputs.dry_run }}
+        run: |
+          name="${{ steps.pkg.outputs.name }}"
+          version="${{ steps.pkg.outputs.version }}"
+          if npm view "$name@$version" version > /dev/null 2>&1; then
+            echo "::error::$name@$version is already published to npm"
+            exit 1
+          fi
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public --tag "${{ inputs.dist_tag }}" ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Create git tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          version="${{ steps.pkg.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "v$version"
+          git push origin "v$version"
+
+      - name: Create GitHub release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ steps.pkg.outputs.version }}"
+          dist_tag="${{ inputs.dist_tag }}"
+          prerelease_flag=""
+          if [ "$dist_tag" != "latest" ]; then
+            prerelease_flag="--prerelease"
+          fi
+          gh release create "v$version" \
+            --title "v$version" \
+            --notes "" \
+            $prerelease_flag

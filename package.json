@@ -1,6 +1,6 @@
 {
   "name": "@narval-xyz/connect",
-  "version": "0.0.5",
+  "version": "0.0.6-rc.0",
   "description": "Narval Connect SDK & Wagmi connector",
   "license": "MIT",
   "type": "module",
@@ -10,41 +10,47 @@
     "url": "git+https://github.com/narval-xyz/connect-sdk.git"
   },
   "files": [
-    "src",
+    "dist",
     "README.md"
   ],
   "homepage": "https://narval.xyz",
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "keywords": [
     "narval",
     "wagmi"
   ],
-  "types": "./src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js",
-      "default": "./src/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./wagmi": {
-      "types": "./src/wagmi/index.d.ts",
-      "import": "./src/wagmi/index.js",
-      "default": "./src/wagmi/index.js"
+      "types": "./dist/wagmi/index.d.ts",
+      "import": "./dist/wagmi/index.js",
+      "default": "./dist/wagmi/index.js"
     }
   },
   "typesVersions": {
     "*": {
       ".": [
-        "./src/index.d.ts"
+        "./dist/index.d.ts"
       ],
       "wagmi": [
-        "./src/wagmi/index.d.ts"
+        "./dist/wagmi/index.d.ts"
       ]
     }
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5.0.0",
