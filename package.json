@@ -1,6 +1,6 @@
 {
   "name": "@narval-xyz/connect",
-  "version": "0.0.6-rc.0",
+  "version": "0.0.7",
   "description": "Narval Connect SDK & Wagmi connector",
   "license": "MIT",
   "type": "module",
