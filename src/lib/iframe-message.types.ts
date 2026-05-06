@@ -38,6 +38,10 @@ export const RequestType = {
   RESTORE_SESSION_REQUEST: 'v1.session.restore.request',
   RESTORE_SESSION_RESPONSE: 'v1.session.restore.response',
 
+  // Connection details (read-only, public-safe view of the active session)
+  GET_CONNECTION_DETAILS_REQUEST: 'v1.connection.details.get.request',
+  GET_CONNECTION_DETAILS_RESPONSE: 'v1.connection.details.get.response',
+
   // Grant Flow
   START_GRANT_REQUEST: 'v1.grant.start.request',
   START_GRANT_RESPONSE: 'v1.grant.start.response',
@@ -108,6 +112,29 @@ export const RestoreSessionResponseData = z.object({
   accounts: z.array(Account).nullable().optional()
 })
 export type RestoreSessionResponseData = z.infer<typeof RestoreSessionResponseData>
+
+/* GET_CONNECTION_DETAILS */
+export const ConnectionProvider = z.object({
+  providerId: z.string(),
+  name: z.string().nullish(),
+  logo: z.string().nullish(),
+  url: z.string().nullish(),
+  isSandbox: z.boolean().nullish()
+})
+export type ConnectionProvider = z.infer<typeof ConnectionProvider>
+
+export const GetConnectionDetailsRequestData = z.null().or(z.undefined())
+export type GetConnectionDetailsRequestData = z.infer<typeof GetConnectionDetailsRequestData>
+
+export const ConnectionDetails = z.object({
+  connectionId: z.string(),
+  accounts: z.array(Account).nullish(),
+  provider: ConnectionProvider.optional()
+})
+export type ConnectionDetails = z.infer<typeof ConnectionDetails>
+
+export const GetConnectionDetailsResponseData = ConnectionDetails.nullable()
+export type GetConnectionDetailsResponseData = z.infer<typeof GetConnectionDetailsResponseData>
 
 /* SEND_TRANSACTION */
 export const SendTransactionRequestData = transactionSubmitRequestSchema
@@ -197,6 +224,7 @@ export type Eip1193MessageEventData = z.infer<typeof Eip1193MessageEventData>
 export const dataSchemaParsers: Partial<Record<MessageType, z.ZodType<any>>> = {
   [MessageType.ERROR_RESPONSE]: ErrorResponseData,
   [MessageType.RESTORE_SESSION_RESPONSE]: RestoreSessionResponseData,
+  [MessageType.GET_CONNECTION_DETAILS_RESPONSE]: GetConnectionDetailsResponseData,
   [MessageType.START_GRANT_RESPONSE]: StartGrantResponseData,
   [MessageType.CONTINUE_GRANT_RESPONSE]: ContinueGrantResponseData,
   [MessageType.EIP1193_RPC_RESPONSE]: Eip1193RpcResponseData
@@ -246,6 +274,16 @@ export const iframeRequestSchema: Record<string, MessageMapType | undefined> = {
     response: {
       type: RequestType.RESTORE_SESSION_RESPONSE,
       schema: RestoreSessionResponseData
+    }
+  },
+  [RequestType.GET_CONNECTION_DETAILS_REQUEST]: {
+    request: {
+      type: RequestType.GET_CONNECTION_DETAILS_REQUEST,
+      schema: GetConnectionDetailsRequestData
+    },
+    response: {
+      type: RequestType.GET_CONNECTION_DETAILS_RESPONSE,
+      schema: GetConnectionDetailsResponseData
     }
   },
   [RequestType.SEND_TRANSACTION_REQUEST]: {
