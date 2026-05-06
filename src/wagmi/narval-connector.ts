@@ -4,6 +4,7 @@ import { createConnector, extractRpcUrls, type Connector } from '@wagmi/core'
 import { SwitchChainError } from 'ox/Provider'
 import { ClientChainNotConfiguredError, RpcError, UserRejectedRequestError, numberToHex, type Address } from 'viem'
 import { getAddress } from 'viem/utils'
+import type { ConnectionDetails } from '../lib/iframe-message.types.js'
 import { NarvalConnectWidget, type Narval1193Provider, type NarvalConnectWidgetConfig } from '../lib/widget.js'
 
 const getConnectorConfig = ({
@@ -76,6 +77,39 @@ const preventInvalidSetup = (config: NarvalConfig) => {
       throw new Error('Narval wagmi connector can only have one primary instance')
     }
   }
+}
+
+/**
+ * Resolve the widget instance to query for connection details.
+ * Prefers the widget matching the provided config; otherwise falls back to the
+ * primary (non-secondary) registered instance.
+ */
+const resolveWidgetForQuery = (config?: NarvalConnectWidgetConfig): NarvalConnectWidget | undefined => {
+  if (config) {
+    return widgetInstances[JSON.stringify(config)]
+  }
+  const primary = connectorInstances.find((i) => !i.overrides?.isSecondary) ?? connectorInstances[0]
+  if (!primary?.config) {
+    return undefined
+  }
+  return widgetInstances[JSON.stringify(primary.config)]
+}
+
+/**
+ * Returns the details of the active widget connection — provider,
+ * connectionId, and accounts. Returns `undefined` when there is no active
+ * session yet (or when the widget has not been initialized).
+ *
+ * If multiple `narval()` connectors are registered, pass the same `config` used
+ * to register the connector to disambiguate; otherwise the primary instance is
+ * used.
+ */
+export async function getConnectionDetails(config?: NarvalConnectWidgetConfig): Promise<ConnectionDetails | undefined> {
+  const widget = resolveWidgetForQuery(config)
+  if (!widget) {
+    return undefined
+  }
+  return widget.getConnectionDetails()
 }
 
 export function narval(config: NarvalConfig) {

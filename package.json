@@ -1,6 +1,6 @@
 {
   "name": "@narval-xyz/connect",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Narval Connect SDK & Wagmi connector",
   "license": "MIT",
   "type": "module",
@@ -9,17 +9,11 @@
     "type": "git",
     "url": "git+https://github.com/narval-xyz/connect-sdk.git"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
+  "files": ["dist", "README.md"],
   "homepage": "https://narval.xyz",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "keywords": [
-    "narval",
-    "wagmi"
-  ],
+  "keywords": ["narval", "wagmi"],
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -35,12 +29,8 @@
   },
   "typesVersions": {
     "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "wagmi": [
-        "./dist/wagmi/index.d.ts"
-      ]
+      ".": ["./dist/index.d.ts"],
+      "wagmi": ["./dist/wagmi/index.d.ts"]
     }
   },
   "publishConfig": {

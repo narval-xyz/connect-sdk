@@ -14,6 +14,7 @@ import {
 import { removeSearchParams } from '../shared/location.util.js'
 import { hasSession, setHasSession } from './has-session.storage.js'
 import {
+  ConnectionDetails,
   ContinueGrantRequestData,
   ContinueGrantResponseData,
   Eip1193AccountsChangedEventData,
@@ -24,6 +25,8 @@ import {
   Eip1193RpcResponseData,
   ErrorResponseData,
   EventType,
+  GetConnectionDetailsRequestData,
+  GetConnectionDetailsResponseData,
   MessageType,
   NavigateToUrlRequestData,
   RequestType,
@@ -221,6 +224,30 @@ export class NarvalConnectWidget {
   public async hasExistingSession(): Promise<boolean> {
     await this.constructorPromise
     return hasSession(this.config.clientId)
+  }
+
+  /**
+   * Returns the public-safe details of the active connection (provider,
+   * connectionId, accounts), or `undefined` if no session is active.
+   *
+   * This queries the iframe widget's session store via postMessage. Sensitive
+   * fields (access tokens, private keys, manage tokens) are never exposed.
+   */
+  public async getConnectionDetails(): Promise<ConnectionDetails | undefined> {
+    await this.constructorPromise
+
+    if (!hasSession(this.config.clientId)) {
+      return undefined
+    }
+
+    await this.waitForHandshake()
+
+    const response = await this.sendRequest<GetConnectionDetailsRequestData, GetConnectionDetailsResponseData>({
+      type: MessageType.GET_CONNECTION_DETAILS_REQUEST,
+      data: undefined
+    })
+
+    return response ?? undefined
   }
 
   private async checkForExistingSession(): Promise<void> {
